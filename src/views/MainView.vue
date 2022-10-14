@@ -84,7 +84,7 @@ const onDecryptionCopyButtonClickHandler = async () => {
       <v-button type="primary" @click="onGenerateKeysClickHandler">
         Сгенерировать ключи
       </v-button>
-      <div class="keys-container">
+      <div v-if="keyPair.publicKey && keyPair.privateKey" class="keys-container">
         <div class="key-content">
           <div class="key">
             <n-scrollbar>
