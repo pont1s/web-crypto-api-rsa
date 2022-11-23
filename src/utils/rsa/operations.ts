@@ -1,7 +1,7 @@
 import {
   DEFAULT_CHAR_SIZE, DEFAULT_HASH_ALG, RSA_EXCHANGE_ALG, RSA_WRITE_ALG, SALT_LENGTH,
 } from './constants';
-import { arrBufToBase64, normalizeBase64ToBuf, normalizeUnicodeToBuf } from './utils';
+import { normalizeBase64ToBuf, normalizeUnicodeToBuf } from './utils';
 import { importPrivateKey, importPublicKey } from './keys';
 
 import {
@@ -10,12 +10,15 @@ import {
 
 export async function sign(
   msg: Msg,
-  privateKey: PrivateKey,
+  privateKey: string | PrivateKey,
   charSize: CharSize = DEFAULT_CHAR_SIZE,
+  hashAlg: HashAlg = DEFAULT_HASH_ALG,
 ): Promise<ArrayBuffer> {
   return window.crypto.subtle.sign(
     { name: RSA_WRITE_ALG, saltLength: SALT_LENGTH },
-    privateKey,
+    typeof privateKey === 'string'
+      ? await importPrivateKey(privateKey, hashAlg, KeyUse.Write)
+      : privateKey,
     normalizeUnicodeToBuf(msg, charSize),
   );
 }
@@ -68,9 +71,4 @@ export async function decrypt(
     normalized,
   ) as ArrayBuffer;
   return decryptResult;
-}
-
-export async function getPublicKey(keypair: CryptoKeyPair): Promise<string> {
-  const spki = await window.crypto.subtle.exportKey('spki', keypair.publicKey);
-  return arrBufToBase64(spki);
 }

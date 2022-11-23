@@ -73,7 +73,7 @@ export async function importPublicKey(base64Key: string, hashAlg: HashAlg, use: 
 export async function importPrivateKey(base64Key: string, hashAlg: HashAlg, use: KeyUse): Promise<PublicKey> {
   checkValidKeyUse(use);
   const alg = use === KeyUse.Exchange ? RSA_EXCHANGE_ALG : RSA_WRITE_ALG;
-  const uses: KeyUsage[] = use === KeyUse.Exchange ? ['decrypt'] : ['verify'];
+  const uses: KeyUsage[] = use === KeyUse.Exchange ? ['decrypt'] : ['sign'];
   const buf = base64ToArrBuf(stripPrivateKeyHeader(base64Key));
   const key = await window.crypto.subtle.importKey(
     'pkcs8',
